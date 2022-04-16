@@ -33,44 +33,48 @@ export class CombatComponent implements OnInit {
     this._combatService.Updated.subscribe(() => {
       this.rowData = [{
         event: "Bounties",
-        total: this._combatService.CreditsFromVouchersBounty,
-        perHour: this._combatService.PerHour(this._combatService.CreditsFromVouchersBounty)
+        total: this._combatService.CreditsFromVouchersBounty.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsFromVouchersBounty).toLocaleString()
+      },{
+        event: "Bounties (unclaimed)",
+        total: this._combatService.PotentialCreditsFromBounty.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.PotentialCreditsFromBounty).toLocaleString()
       },{
         event: "Missions",
-        total: this._combatService.CreditsFromMission,
-        perHour: this._combatService.PerHour(this._combatService.CreditsFromMission)
+        total: this._combatService.CreditsFromMission.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsFromMission).toLocaleString()
       },{
         event: "Bonds",
-        total: this._combatService.CreditsFromVouchersBond,
-        perHour: this._combatService.PerHour(this._combatService.CreditsFromVouchersBond)
+        total: this._combatService.CreditsFromVouchersBond.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsFromVouchersBond).toLocaleString()
       },{
         event: "Ammo Cost",
-        total: this._combatService.CreditsSpentAmmo,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentAmmo)
+        total: this._combatService.CreditsSpentAmmo.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentAmmo).toLocaleString()
       },{
         event: "Drone Cost",
-        total: this._combatService.CreditsSpentDrones,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentDrones)
+        total: this._combatService.CreditsSpentDrones.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentDrones).toLocaleString()
       },{
         event: "Fule Cost",
-        total: this._combatService.CreditsSpentFuel,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentFuel)
+        total: this._combatService.CreditsSpentFuel.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentFuel).toLocaleString()
       },{
         event: "Repair Cost",
-        total: this._combatService.CreditsSpentRepair,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentRepair)
+        total: this._combatService.CreditsSpentRepair.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentRepair).toLocaleString()
       },{
         event: "Restock Vehicle",
-        total: this._combatService.CreditsSpentRestockVehicle,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentRestockVehicle)
+        total: this._combatService.CreditsSpentRestockVehicle.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentRestockVehicle).toLocaleString()
       },{
         event: "Paid Bounties",
-        total: this._combatService.CreditsSpentBounties,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentBounties)
+        total: this._combatService.CreditsSpentBounties.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentBounties).toLocaleString()
       },{
         event: "Paid Fines",
-        total: this._combatService.CreditsSpentFines,
-        perHour: this._combatService.PerHour(this._combatService.CreditsSpentFines)
+        total: this._combatService.CreditsSpentFines.toLocaleString(),
+        perHour: this._combatService.PerHour(this._combatService.CreditsSpentFines).toLocaleString()
       }];
     });
   }

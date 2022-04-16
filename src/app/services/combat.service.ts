@@ -18,6 +18,7 @@ export class CombatService {
   private readonly _payBounties = "PayBounties";
   private readonly _payFine = "PayFines";
   private readonly _restockVehicle = "RestockVehicle";
+  private readonly _bounty = "Bounty";
   private readonly _redeemVoucher = "RedeemVoucher";
   private readonly _voucherBountyType = "bounty";
   private readonly _voucherBoundType = "combatBond";
@@ -27,6 +28,7 @@ export class CombatService {
   public get Updated () {
     return this._updated.asObservable();
   }
+  public PotentialCreditsFromBounty : number = 0;
   public CreditsFromVouchersBounty : number = 0;
   public CreditsFromVouchersBond : number = 0;
   public CreditsFromMission : number = 0;
@@ -86,6 +88,9 @@ export class CombatService {
       case this._redeemVoucher:
         this.RedeemVoucher(event);
         break;
+      case this._bounty:
+        this.PotentialCreditsFromBounty += event.TotalReward
+        break;
       case this._reset:
         this.Reset();
         break;
@@ -114,12 +119,13 @@ export class CombatService {
   }
 
   private RedeemVoucher(event: any){
-    if(event.type == this._voucherBoundType){
-      this.CreditsFromVouchersBond == event.Amount
+    if(event.Type == this._voucherBoundType){
+      this.CreditsFromVouchersBond += event.Amount
     }
 
-    if(event.type == this._voucherBountyType){
-      this.CreditsFromVouchersBounty == event.Amount
+    if(event.Type == this._voucherBountyType){
+      this.PotentialCreditsFromBounty = 0;
+      this.CreditsFromVouchersBounty += event.Amount
     }
   }
 }
