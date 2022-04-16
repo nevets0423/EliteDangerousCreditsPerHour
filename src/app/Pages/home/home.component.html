@@ -1,0 +1,16 @@
+<div class="tabs is-boxed">
+  <ul>
+    <li (click)="TabClicked(Tab1)" class="is-toggle" [ngClass]="{'is-active': ActiveTab == Tab1}">
+      <a>
+        <span>Trading</span>
+      </a>
+    </li>
+    <li (click)="TabClicked(Tab2)" class="is-toggle" [ngClass]="{'is-active': ActiveTab == Tab2}">
+      <a>
+        <span>Combat</span>
+      </a>
+    </li>
+  </ul>
+</div>
+<app-trade *ngIf="ActiveTab == Tab1"></app-trade>
+<app-combat *ngIf="ActiveTab == Tab2"></app-combat>

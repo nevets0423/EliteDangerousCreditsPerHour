@@ -1,0 +1,65 @@
+<p class="centerText">Credits Per Hour {{(IncomePerHour | async)?.toLocaleString()}}</p>
+<div *ngIf="RoutesLoaded" style="align-items: center;" class="centerText">
+  <div @TextInsertRemoveTrigger class="inline container centerText">
+    <h3>System: {{Route1.startSystem}}</h3>
+    <h3>Station: {{Route1.startStation}}</h3>
+    <h4>Buy {{Route1.ItemName}}</h4>
+  </div>
+
+  <div *ngIf="!ShowRightArrows || !ShowLeftArrows" class="inline container" style="vertical-align: top;">
+    <div class="inline container">
+      <div @FSDTrigger *ngIf="Jumps > 0">
+        <h4 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;padding-right: 5px;">{{Jumps}}</h4>
+        <h5 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;">Jumps Remaining</h5>
+      </div>
+      <div *ngIf="Jumps == 0">
+        <h4></h4>
+      </div>
+    </div>
+
+    <div @ArrowTrigger *ngIf="ShowRightArrows" id="arrowAnim">
+      <div class="arrowSlidingRight">
+        <div class="arrowRight"></div>
+      </div>
+      <div class="arrowSlidingRight delay1">
+        <div class="arrowRight"></div>
+      </div>
+      <div class="arrowSlidingRight delay2">
+        <div class="arrowRight"></div>
+      </div>
+      <div class="arrowSlidingRight delay3">
+        <div class="arrowRight"></div>
+      </div>
+    </div>
+
+    <div @ArrowTrigger *ngIf="ShowLeftArrows" id="arrowAnim">
+      <div class="arrowSlidingLeft">
+        <div class="arrowLeft"></div>
+      </div>
+      <div class="arrowSlidingLeft delay1">
+        <div class="arrowLeft"></div>
+      </div>
+      <div class="arrowSlidingLeft delay2">
+        <div class="arrowLeft"></div>
+      </div>
+      <div class="arrowSlidingLeft delay3">
+        <div class="arrowLeft"></div>
+      </div>
+    </div>
+
+    <div class="inline container">
+      <div @FSDTrigger *ngIf="Jumps > 0">
+        <h5 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;">{{NextSystemInRoute}}</h5>
+      </div>
+      <div *ngIf="Jumps == 0">
+        <h4></h4>
+      </div>
+    </div>
+  </div>
+
+  <div @TextInsertRemoveTrigger class="inline container centerText">
+    <h3>System: {{Route2.startSystem}}</h3>
+    <h3>Station: {{Route2.startStation}}</h3>
+    <h4>Buy {{Route2.ItemName}}</h4>
+  </div>
+</div>

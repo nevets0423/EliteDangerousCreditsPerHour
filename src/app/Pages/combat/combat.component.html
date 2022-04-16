@@ -1,0 +1,12 @@
+<p class="centerText">Credits Per Hour {{(CreditsPerHour)?.toLocaleString()}}</p>
+<div class="center">
+<ag-grid-angular
+      style="height: 320px; width: 75%;"
+      class="ag-theme-balham"
+      [rowData]="rowData"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [enableCellChangeFlash]="true"
+      (gridReady)="onGridReady($event)">
+  </ag-grid-angular>
+</div>
