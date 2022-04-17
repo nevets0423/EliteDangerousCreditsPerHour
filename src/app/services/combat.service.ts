@@ -1,28 +1,13 @@
-import { TradeRouteService } from './../../../EliteCreditPerHour-win32-x64/resources/app/src/app/services/trade-route.service';
-import { Observable, Subscriber, BehaviorSubject } from 'rxjs';
+import { JournalNotifierService } from './journal-notifier.service';
+import { BehaviorSubject, filter } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CombatService {
-  private readonly _factionKillBond = "FactionKillBond";
-  private readonly _buyAmmo = "BuyAmmo";
-  private readonly _buyDrones = "BuyDrones";
-  private readonly _sellDrones = "SellDrones";
-  private readonly _refuelAll = "RefuelAll";
-  private readonly _refuelPartial = "RefuelPartial";
-  private readonly _repairAll = "RepairAll";
-  private readonly _repairPartial = "RepairPartial";
-  private readonly _missionComplet = "MissionCompleted";
-  private readonly _payBounties = "PayBounties";
-  private readonly _payFine = "PayFines";
-  private readonly _restockVehicle = "RestockVehicle";
-  private readonly _bounty = "Bounty";
-  private readonly _redeemVoucher = "RedeemVoucher";
   private readonly _voucherBountyType = "bounty";
   private readonly _voucherBoundType = "combatBond";
-  private readonly _reset = "Reset";
   private _updated = new BehaviorSubject(0);
 
   public get Updated () {
@@ -48,54 +33,100 @@ export class CombatService {
   private _hoursSpent : number = 1;
   private _startTimeStamp: Date | null = null;
 
-  constructor() { }
+  constructor(private _journalNotifierService: JournalNotifierService) { }
+
+  public SubscribeToEvents(){
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.BuyAmmo)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentAmmo += event.Cost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.BuyDrones)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentDrones += event.TotalCost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.SellDrones)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentDrones -= event.TotalSale;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RefuelAll)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentFuel += event.Cost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RefuelPartial)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentFuel += event.Cost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RepairAll)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentRepair += event.Cost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RepairPartial)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentRepair += event.Cost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.MissionComplet)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsFromMission += event.Reward;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.PayBounties)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentBounties += event.Amount;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.PayFine)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentFines += event.Amount;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RestockVehicle)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.CreditsSpentRestockVehicle += event.Cost;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RedeemVoucher)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.RedeemVoucher(event);
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Bounty)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.PotentialCreditsFromBounty += event.TotalReward;
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Reset)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.Reset();
+        this.Update(event);
+    });
+  }
 
   public PerHour(amount: number){
     return Math.floor(amount / this._hoursSpent);
   }
 
-  public Update(event: any){
-    switch(event.event){
-      case this._buyAmmo:
-        this.CreditsSpentAmmo += event.Cost;
-        break;
-      case this._buyDrones:
-        this.CreditsSpentDrones += event.TotalCost;
-        break;
-      case this._sellDrones:
-        this.CreditsSpentDrones -= event.TotalSale;
-        break;
-      case this._refuelAll:
-      case this._refuelPartial:
-        this.CreditsSpentFuel += event.Cost;
-        break;
-      case this._repairAll:
-      case this._repairPartial:
-        this.CreditsSpentRepair += event.Cost;
-        break;
-      case this._missionComplet:
-        this.CreditsFromMission += event.Reward;
-        break;
-      case this._payBounties:
-        this.CreditsSpentBounties += event.Amount;
-        break;
-      case this._payFine:
-        this.CreditsSpentFines += event.Amount;
-        break;
-      case this._restockVehicle:
-        this.CreditsSpentRestockVehicle += event.Cost;
-        break;
-      case this._redeemVoucher:
-        this.RedeemVoucher(event);
-        break;
-      case this._bounty:
-        this.PotentialCreditsFromBounty += event.TotalReward
-        break;
-      case this._reset:
-        this.Reset();
-        break;
-    }
-
+  private Update(event: any){
     if(this._startTimeStamp == null) {
       this._startTimeStamp = event.timestamp;
     }

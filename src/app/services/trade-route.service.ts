@@ -1,5 +1,6 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, filter } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { JournalNotifierService } from './journal-notifier.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,28 +32,29 @@ export class TradeRouteService {
     return this._routes.value;
   }
 
-  constructor() { }
+  constructor(private _journalNotifierService: JournalNotifierService) { }
 
-  public Update(event: any){
-    switch(event.event){
-      case this._marketBuy:
+  public SubscribeToEvents(){
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.MarketBuy)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.StartRoute(event);
-        break;
-      case this._marketSell:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.MarketSell)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.EndRoute(event);
-        break;
-      case this._market:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Market)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.UpdateSystemInfo(event);
-        break;
-    }
-
-    if(!this._recordRoute){
-      return;
-    }
-
-    if(event.event == this._fsdJump){
-      this._currentRoute.Jumps.push(event.StarSystem);
-    }
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.FsdJump)
+      .pipe(filter(event => event != null && this._recordRoute))
+      .subscribe(event => {
+        this._currentRoute.Jumps.push(event.StarSystem);
+    });
   }
 
   private EndRoute(event: any){

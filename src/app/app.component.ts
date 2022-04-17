@@ -15,6 +15,10 @@ import { timer, skip } from 'rxjs';
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
+  public UpdateMessage: string = "";
+  public ShowUpdateNotification: boolean = false;
+  public ShowRestartButton: boolean = false;
+
   constructor(
     private _journalService: JournalService,
     private _marketMonitorService: MarketMonitorService,
@@ -40,22 +44,42 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._electronService.ipcRenderer.on('update_available', () => {
+      this._electronService.ipcRenderer.removeAllListeners('update_available');
+      this.UpdateMessage = 'A new update is available. Downloading now...';
+      this.ShowUpdateNotification = true;
+    });
+    this._electronService.ipcRenderer.on('update_downloaded', () => {
+      this._electronService.ipcRenderer.removeAllListeners('update_downloaded');
+      this.UpdateMessage = 'Update Downloaded. It will be installed on restart. Restart now?';
+      this.ShowRestartButton = true;
+      this.ShowUpdateNotification = true;
+    });
+
+    this._combatService.SubscribeToEvents();
+    this._commanderInfo.SubscribeToEvents();
+    this._flightService.SubscribeToEvents();
+    this._marketMonitorService.SubscribeToEvents();
+    this._tradeRouteService.SubscribeToEvents();
+
     this._journalService.Event.pipe(skip(1)).subscribe(event => {
-      this._marketMonitorService.Update(event);
-      this._commanderInfo.Update(event);
-      this._flightService.Update(event);
-      this._tradeRouteService.Update(event);
-      this._combatService.Update(event);
       console.log("Event",event);
     });
 
-    timer(0, 1000).subscribe(x => {
+    timer(0, 5000).subscribe(x => {
       this._journalService.ReadInJournal();
     });
   }
 
-  zeroOutRecords(){
-    console.log("calling AddResetEntryToLog")
+  CloseNotification() {
+    this.ShowUpdateNotification = false;
+  }
+
+  RestartApp() {
+    this._electronService.ipcRenderer.send('restart_app');
+  }
+
+  ZeroOutRecords(){
     this._electronService.ipcRenderer.send('AddResetEntryToLog');
   }
 

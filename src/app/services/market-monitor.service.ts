@@ -1,23 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject} from 'rxjs';
+import { BehaviorSubject, filter} from 'rxjs';
+import { JournalNotifierService } from './journal-notifier.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MarketMonitorService {
-  private readonly _marketBuy = "MarketBuy";
-  private readonly _marketSell = "MarketSell";
-  private readonly _docked = "Docked";
-  private readonly _undocked = "Undocked";
-  private readonly _location = "Location";
-  private readonly _refuelAll = "RefuelAll";
-  private readonly _refuelPartial = "RefuelPartial";
-  private readonly _repairAll = "RepairAll";
-  private readonly _repairPartial = "RepairPartial";
-  private readonly _redeemVoucher = "RedeemVoucher";
   private readonly _tradeVoucherType = "trade";
   private readonly _notDockedMessage = "Not docked at station."
-  private readonly _reset = "Reset";
   private _stationName = this._notDockedMessage;
   private _systemName = "N/a"
   private _refuelCosts: number = 0;
@@ -40,40 +30,78 @@ export class MarketMonitorService {
     return this._incomePerHour.asObservable();
   }
 
-  constructor() {}
+  constructor(private _journalNotifierService: JournalNotifierService) {}
 
-  public Update(event: any){
-    switch(event.event){
-      case this._docked:
+  public SubscribeToEvents(){
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Docked)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Docked(event);
-        break;
-      case this._undocked:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Undocked)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.UnDocked(event);
-        break;
-      case this._location:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Location)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Location(event);
-        break;
-      case this._marketSell:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.MarketSell)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.MarketSell(event);
-        break;
-      case this._marketBuy:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.MarketBuy)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.MarketBuy(event);
-        break;
-      case this._refuelAll:
-      case this._refuelPartial:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RefuelAll)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Refuel(event);
-        break;
-      case this._repairAll:
-      case this._repairPartial:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RefuelPartial)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.Refuel(event);
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RepairAll)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Repair(event);
-        break;
-      case this._redeemVoucher:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RepairPartial)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.Repair(event);
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.RedeemVoucher)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.RedeemVoucher(event);
-        break;
-      case this._reset:
+        this.Update(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Reset)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.ZeroOutCreditsPerHour();
-        break;
-    }
+        this.Update(event);
+    });
+  }
+
+  private Update(event: any){
     this._currentTimeStamp = event.timestamp;
     this.CalculateCreditsPerHour();
   }

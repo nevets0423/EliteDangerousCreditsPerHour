@@ -1,6 +1,15 @@
+<div *ngIf="ShowUpdateNotification" id="notification">
+  <p id="message">{{UpdateMessage}}</p>
+  <button id="close-button" onClick="CloseNotification()">
+    Close
+  </button>
+  <button *ngIf="ShowRestartButton" id="restart-button" onClick="RestartApp()">
+    Restart
+  </button>
+</div>
 <app-spinner *ngIf="LoadingJournal" Message={{Message}}></app-spinner>
 <div *ngIf="!LoadingJournal">
   <h1 class="centerText">Welcome Commander {{CommanderName | async }}</h1>
   <router-outlet></router-outlet>
-  <button class="bottomCorner" (click)="zeroOutRecords()">Zero Out</button>
+  <button class="bottomCorner" (click)="ZeroOutRecords()">Zero Out</button>
 </div>

@@ -1,22 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, filter } from 'rxjs';
+import { JournalNotifierService } from './journal-notifier.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FlightService {
-  private readonly _docked = "Docked";
-  private readonly _dockingRequested = "DockingRequested";
-  private readonly _dockingGranted = "DockingGranted";
-  private readonly _dockingDenied = "DockingDenied";
-  private readonly _dockingCanceled = "DockingCancelled";
-  private readonly _dockingTimeOut = "DockingTimeout";
-  private readonly _undocked = "Undocked";
-  private readonly _location = "Location";
-  private readonly _fsdTarget = "FSDTarget";
-  private readonly _startJump = "StartJump";
-  private readonly _fsdJump = "FSDJump";
-
   private _currentStarSystem = new BehaviorSubject<any>(null);
   public get StarSystem() {
     return this._currentStarSystem.asObservable();
@@ -69,43 +58,69 @@ export class FlightService {
     return this._nextSystemInRoute.value;
   }
 
-  constructor() { }
+  constructor(private _journalNotifierService: JournalNotifierService) { }
 
-  public Update(event: any){
-    switch(event.event){
-      case this._docked:
+  public SubscribeToEvents(){
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Docked)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_Docked(event);
-        break;
-      case this._dockingRequested:
-      case this._dockingGranted:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.DockingRequested)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_DockingInProgress(event);
-        break;
-      case this._dockingDenied:
-      case this._dockingCanceled:
-      case this._dockingTimeOut:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.DockingGranted)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.Update_DockingInProgress(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.DockingDenied)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_DockingCancled(event);
-        break;
-      case this._undocked:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.DockingCanceled)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.Update_DockingCancled(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.DockingTimeOut)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.Update_DockingCancled(event);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Undocked)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_TakeOff(event);
-        break;
-      case this._location:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Location)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_Location(event);
-        break;
-      case this._fsdTarget:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.FsdTarget)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_FSDTarget(event);
-        break;
-      case this._startJump:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.StartJump)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_FSDCharging(event);
-        break;
-      case this._fsdJump:
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.FsdJump)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
         this.Update_FSDJump(event);
-        break;
-    }
+    });
   }
 
   private Update_Docked(event:any){
-    this._currentlyDocked.next(true);
     this._currentStation.next(event);
+    this._currentlyDocked.next(true);
     this._dockingInProcess.next(false);
   }
 
@@ -129,16 +144,15 @@ export class FlightService {
   private Update_FSDTarget(event: any){
     this._jumpsRemaining = event.RemainingJumpsInRoute;
     this._nextSystemInRoute.next(event.Name);
-    console.log(event);
   }
 
   private Update_FSDCharging(event: any){
     this._fsdCharging.next(true);
+    this._jumpsRemaining--;
   }
 
   private Update_FSDJump(event: any){
     this._currentStarSystem.next(event);
     this._fsdCharging.next(false);
-    this._jumpsRemaining--;
   }
 }
