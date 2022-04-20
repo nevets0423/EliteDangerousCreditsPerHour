@@ -16,15 +16,19 @@ function createWindow () {
     }
   })
 
-  mainWindow.loadURL(
+  //mainWindow.loadFile('index.html');
+  //mainWindow.loadURL(path.resolve(path.join(__dirname, `../src/index.html`)));
+  mainWindow.loadURL(path.resolve(path.join(__dirname, `../dist/elite-dangerous-credit-per-hour/index.html`)));
+
+  /*mainWindow.loadURL(
     url.format({
-      pathname: path.join(__dirname, `/dist/elite-dangerous-credit-per-hour/index.html`),
+      pathname: path.join(__dirname, `../dist/elite-dangerous-credit-per-hour/index.html`),
       protocol: "file:",
       slashes: true
     })
-  );
+  );*/
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', function () {
     mainWindow = null

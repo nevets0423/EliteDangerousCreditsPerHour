@@ -120,6 +120,12 @@ export class CombatService {
         this.Reset();
         this.Update(event);
     });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.Died)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this.PotentialCreditsFromBounty = 0;
+        this.Update(event);
+    });
   }
 
   public PerHour(amount: number){

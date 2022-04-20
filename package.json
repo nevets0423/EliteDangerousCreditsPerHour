@@ -1,14 +1,15 @@
 {
   "name": "elite-dangerous-credit-per-hour",
-  "version": "1.0.0",
-  "main": "app.js",
+  "version": "1.0.1",
+  "main": "src/app.js",
   "scripts": {
     "ng": "ng",
     "start": "ng build --base-href ./ --optimization false --source-map true && electron . --serve",
     "build": "ng build --base-href ./",
     "watch": "ng build --base-href ./ --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng build --base-href ./ && electron-builder build --win --publish always"
+    "predeploy": "ng build --base-href ./ ",
+    "deploy": "electron-builder build --publish always"
   },
   "repository": {
     "type" : "git",
@@ -27,6 +28,7 @@
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
     "@electron/remote": "^2.0.8",
+    "electron-updater": "^5.0.1",
     "ag-grid-angular": "^27.1.1",
     "ag-grid-community": "^27.1.0",
     "bulma": "^0.9.3",

@@ -88,16 +88,10 @@ export class TradeComponent implements OnInit {
     if(this.Route1 == null || this.Route2 == null){
       return;
     }
-    this.ShowRightArrows = false;
-    this.ShowLeftArrows = false;
-    if(this.Route1.startSystem == this._flightService.StarSystemValue.StarSystem &&
-        this.Route1.startStation == this._flightService.StationValue.StationName){
-        this.ShowRightArrows = true;
-    }
-    else if(this.Route2.startSystem == this._flightService.StarSystemValue.StarSystem &&
-      this.Route2.startStation == this._flightService.StationValue.StationName) {
-        this.ShowLeftArrows = true;
-    }
+    this.ShowRightArrows = this.Route1.startSystem == this._flightService.StarSystemValue.StarSystem &&
+                           this.Route1.startStation == this._flightService.StationValue.StationName;
+    this.ShowLeftArrows = this.Route2.startSystem == this._flightService.StarSystemValue.StarSystem &&
+                          this.Route2.startStation == this._flightService.StationValue.StationName;
   }
 
   LoadRoutes(routes: any[]){

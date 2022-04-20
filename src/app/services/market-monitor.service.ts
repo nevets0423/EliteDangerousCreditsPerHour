@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter} from 'rxjs';
+import { BehaviorSubject, filter, timer} from 'rxjs';
 import { JournalNotifierService } from './journal-notifier.service';
 
 @Injectable({
@@ -99,6 +99,10 @@ export class MarketMonitorService {
         this.ZeroOutCreditsPerHour();
         this.Update(event);
     });
+
+    timer(0, 900000).subscribe(x => { //every 15 mins we update. In case nothing else has forces an update.
+      this.CalculateCreditsPerHour();
+    });
   }
 
   private Update(event: any){
@@ -170,6 +174,7 @@ export class MarketMonitorService {
       var startTimeStamp = this._marketBuyEvents.value[0].timestamp;
 
       var hours = Math.floor(Math.abs(new Date(this._currentTimeStamp).getTime() - new Date(startTimeStamp).getTime()) / (60*60*1000)) + 1;
+      console.log("Hours", startTimeStamp, this._currentTimeStamp, hours);
       var incomePerHour = Math.floor((totalMaded - totalPaid) + this.SumOfAdditionalCosts() / hours);
       if(incomePerHour == this._incomePerHour.value){
         return;

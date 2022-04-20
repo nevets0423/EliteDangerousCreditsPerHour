@@ -36,6 +36,7 @@ export class JournalNotifierService {
   public readonly DockingTimeOut = "DockingTimeout";
   public readonly FsdTarget = "FSDTarget";
   public readonly StartJump = "StartJump";
+  public readonly Died = "Died";
 
   public readonly TradeVoucherType = "trade";
   public readonly VoucherBountyType = "bounty";

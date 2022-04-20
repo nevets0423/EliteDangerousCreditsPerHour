@@ -26,6 +26,25 @@ span {
   background-color: #2e2f2f !important;
 }
 
+.ag-header,
+.ag-row-even {
+  background-color: #2e2f2f !important;
+}
+
+.ag-row-odd {
+  background-color: #111212 !important;
+}
+
+.ag-row-even,
+.ag-row-odd {
+  color: white !important;
+  border-color: #e0700f !important;
+}
+
+.ag-root .ag-unselectable .ag-layout-normal {
+  background-color: black !important;
+}
+
 button {
   border-color: #ef9445;
   border-width: medium;
