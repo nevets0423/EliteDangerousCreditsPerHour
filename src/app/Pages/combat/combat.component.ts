@@ -56,7 +56,7 @@ export class CombatComponent implements OnInit {
         total: this._combatService.CreditsSpentDrones.toLocaleString(),
         perHour: this._combatService.PerHour(this._combatService.CreditsSpentDrones).toLocaleString()
       },{
-        event: "Fule Cost",
+        event: "Fuel Cost",
         total: this._combatService.CreditsSpentFuel.toLocaleString(),
         perHour: this._combatService.PerHour(this._combatService.CreditsSpentFuel).toLocaleString()
       },{
