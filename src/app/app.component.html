@@ -1,9 +1,9 @@
 <div *ngIf="ShowUpdateNotification" id="notification">
   <p id="message">{{UpdateMessage}}</p>
-  <button id="close-button" onClick="CloseNotification()">
+  <button id="close-button" (click)="CloseNotification()">
     Close
   </button>
-  <button *ngIf="ShowRestartButton" id="restart-button" onClick="RestartApp()">
+  <button *ngIf="ShowRestartButton" id="restart-button" (click)="RestartApp()">
     Restart
   </button>
 </div>

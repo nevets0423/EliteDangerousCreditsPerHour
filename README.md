@@ -30,3 +30,9 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 electron-packager <sourcedir> <appname> --platform=win32 --arch=x64 --overwrite
 
 npx asar extract app.asar destfolder 
+
+## view enviroment Variables
+dir env:
+
+## Set enviroment variables
+$env:GH_TOKEN='<Token>'

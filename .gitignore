@@ -41,6 +41,7 @@ testem.log
 *.rar
 *.zip
 electron-builder.yml
+dev-app-update.yml
 
 # System files
 .DS_Store

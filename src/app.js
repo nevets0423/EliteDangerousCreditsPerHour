@@ -37,7 +37,12 @@ function createWindow () {
   mainWindow.once('ready-to-show', () => {
     autoUpdater.checkForUpdatesAndNotify();
   });
+  mainWindow.webContents.send("update_message", app.getVersion());
 }
+
+autoUpdater.on('checking-for-update',() => {
+  mainWindow.webContents.send("update_message", "checking for updates");
+});
 
 autoUpdater.on('update-available', () => {
   mainWindow.webContents.send('update_available');
@@ -45,6 +50,10 @@ autoUpdater.on('update-available', () => {
 
 autoUpdater.on('update-downloaded', () => {
   mainWindow.webContents.send('update_downloaded');
+});
+
+autoUpdater.on('error', (error) => {
+  mainWindow.webContents.send("update_message", JSON.stringify(error));
 });
 
 ipcMain.on('restart_app', () => {

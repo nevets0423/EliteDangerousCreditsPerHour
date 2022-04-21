@@ -44,6 +44,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._electronService.ipcRenderer.on('update_message', (event, arg:any) => {
+      console.error("message", arg)
+    });
     this._electronService.ipcRenderer.on('update_available', () => {
       this._electronService.ipcRenderer.removeAllListeners('update_available');
       this.UpdateMessage = 'A new update is available. Downloading now...';
