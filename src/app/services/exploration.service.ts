@@ -28,9 +28,9 @@ export class ExplorationService {
     return this._bodiesDiscovered.asObservable();
   }
 
-  private _systemScanned = new BehaviorSubject<boolean>(false);
-  public SystemScanned(){
-    return this._systemScanned.asObservable();
+  private _systemScanned = false;
+  public get SystemScanned(){
+    return this._systemScanned;
   }
 
   public SystemDataSold:  any[] = [];
@@ -52,12 +52,12 @@ export class ExplorationService {
         var currentPercent = this._progress.value;
         this._bodiesDiscovered.next(Math.floor(totalBodies * currentPercent));
 
-        this._systemScanned.next(true);
+        this._systemScanned = true;
     });
     this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.FSSSignalDiscovered)
       .pipe(filter(event => event != null))
       .subscribe(event => {
-        if(this._bodyCount.value == 0){
+        if(this._bodyCount.value == 0 || this._progress.value == 1){
           return;
         }
         this._bodiesDiscovered.next(this._bodiesDiscovered.value + 1);
@@ -70,7 +70,7 @@ export class ExplorationService {
         this._bodyCount.next(0);
         this._progress.next(0);
         this._bodiesDiscovered.next(0);
-        this._systemScanned.next(false);
+        this._systemScanned = false;
     });
     this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.SellExplorationData)
       .pipe(filter(event => event != null))

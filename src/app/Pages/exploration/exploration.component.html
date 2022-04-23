@@ -1,1 +1,15 @@
-<p>exploration works!</p>
+<div class="inline container centerText">
+  <div @FSDTrigger *ngIf="JumpsRemaining > 0">
+    <h4 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;padding-right: 5px;">{{JumpsRemaining}}</h4>
+    <h5 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;">Jumps Remaining</h5>
+  </div>
+  <div *ngIf="JumpsRemaining == 0">
+    <h4></h4>
+  </div>
+</div>
+<app-spinner *ngIf="!HasBeenScanned" Message="Waiting for System Scan"></app-spinner>
+<div *ngIf="HasBeenScanned" class="centerText">
+  <h3>System: {{SystemName | async}}</h3>
+  <h3>BodyCount: {{BodyCount | async}}</h3>
+  <h4>Progress {{Progress | async}}</h4>
+</div>
