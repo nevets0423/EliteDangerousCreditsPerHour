@@ -1,15 +1,16 @@
-<div class="inline container centerText">
-  <div @FSDTrigger *ngIf="JumpsRemaining > 0">
-    <h4 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;padding-right: 5px;">{{JumpsRemaining}}</h4>
-    <h5 style="margin-bottom: 0px;margin-top: 0px;display: inline-block;">Jumps Remaining</h5>
+<div style="margin-bottom: 25px;">
+  <div @FSDTrigger *ngIf="JumpsRemaining > 0" class="centerText">
+    <h4 >{{JumpsRemaining}}</h4>
+    <h5 >Jumps Remaining</h5>
   </div>
   <div *ngIf="JumpsRemaining == 0">
     <h4></h4>
   </div>
 </div>
-<app-spinner *ngIf="!HasBeenScanned" Message="Waiting for System Scan"></app-spinner>
+<app-spinner *ngIf="!HasBeenScanned" Message="Waiting for System Scan" class="centerText"></app-spinner>
 <div *ngIf="HasBeenScanned" class="centerText">
-  <h3>System: {{SystemName | async}}</h3>
-  <h3>BodyCount: {{BodyCount | async}}</h3>
-  <h4>Progress {{Progress | async}}</h4>
+  <h1>System: {{SystemName | async}}</h1>
+  <h1>BodyCount: {{BodyCount | async}}</h1>
+  <h2>Progress {{Progress | async}}</h2>
 </div>
+

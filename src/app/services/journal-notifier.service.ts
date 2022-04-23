@@ -41,6 +41,7 @@ export class JournalNotifierService {
   public readonly SellMultipleExplorationData = "MultiSellExplorationData";
   public readonly FSSDiscoveryScan = "FSSDiscoveryScan";
   public readonly FSSSignalDiscovered = "FSSSignalDiscovered";
+  public readonly FSSAllBodiesFound = "FSSAllBodiesFound";
 
   public readonly TradeVoucherType = "trade";
   public readonly VoucherBountyType = "bounty";

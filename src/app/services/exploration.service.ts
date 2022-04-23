@@ -63,6 +63,12 @@ export class ExplorationService {
         this._bodiesDiscovered.next(this._bodiesDiscovered.value + 1);
         this._progress.next(this._bodiesDiscovered.value / this._bodyCount.value);
     });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.FSSAllBodiesFound)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this._bodiesDiscovered.next(this._bodyCount.value);
+        this._progress.next(1);
+    });
     this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.FsdJump)
       .pipe(filter(event => event != null))
       .subscribe(event => {
