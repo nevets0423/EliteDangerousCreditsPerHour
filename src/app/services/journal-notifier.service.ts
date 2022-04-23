@@ -37,6 +37,10 @@ export class JournalNotifierService {
   public readonly FsdTarget = "FSDTarget";
   public readonly StartJump = "StartJump";
   public readonly Died = "Died";
+  public readonly SellExplorationData = "SellExplorationData";
+  public readonly SellMultipleExplorationData = "MultiSellExplorationData";
+  public readonly FSSDiscoveryScan = "FSSDiscoveryScan";
+  public readonly FSSSignalDiscovered = "FSSSignalDiscovered";
 
   public readonly TradeVoucherType = "trade";
   public readonly VoucherBountyType = "bounty";

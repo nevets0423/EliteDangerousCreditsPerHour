@@ -9,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   public Tab1: string = "tab1";
   public Tab2: string = "tab2";
+  public Tab3: string = "tab3";
   public ActiveTab: string = this.Tab1;
 
   constructor() { }

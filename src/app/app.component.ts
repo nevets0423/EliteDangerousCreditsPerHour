@@ -1,3 +1,4 @@
+import { ExplorationService } from './services/exploration.service';
 import { CombatService } from './services/combat.service';
 import { TradeRouteService } from './services/trade-route.service';
 import { FlightService } from './services/flight.service';
@@ -26,7 +27,8 @@ export class AppComponent implements OnInit {
     private _flightService: FlightService,
     private _tradeRouteService: TradeRouteService,
     private _combatService: CombatService,
-    private _electronService: ElectronService) {}
+    private _electronService: ElectronService,
+    private _explorationService: ExplorationService) {}
 
   public get CommanderName(){
     return this._commanderInfo.Name;
@@ -64,6 +66,7 @@ export class AppComponent implements OnInit {
     this._flightService.SubscribeToEvents();
     this._marketMonitorService.SubscribeToEvents();
     this._tradeRouteService.SubscribeToEvents();
+    this._explorationService.SubscribeToEvents();
 
     this._journalService.Event.pipe(skip(1)).subscribe(event => {
       console.log("Event",event);

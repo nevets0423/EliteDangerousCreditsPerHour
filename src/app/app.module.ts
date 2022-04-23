@@ -12,6 +12,7 @@ import { HomeComponent } from './Pages/home/home.component';
 import { TabsComponent } from './Componets/tabs/tabs.component';
 import { CombatComponent } from './Pages/combat/combat.component';
 import { AgGridModule } from 'ag-grid-angular';
+import { ExplorationComponent } from './Pages/exploration/exploration.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { AgGridModule } from 'ag-grid-angular';
     HomeComponent,
     TabsComponent,
     CombatComponent,
+    ExplorationComponent,
   ],
   imports: [
     BrowserModule,

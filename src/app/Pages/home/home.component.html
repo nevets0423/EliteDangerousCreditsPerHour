@@ -10,7 +10,13 @@
         <span>Combat</span>
       </a>
     </li>
+    <li (click)="TabClicked(Tab3)" class="is-toggle" [ngClass]="{'is-active': ActiveTab == Tab3}">
+      <a>
+        <span>Exploration</span>
+      </a>
+    </li>
   </ul>
 </div>
 <app-trade *ngIf="ActiveTab == Tab1"></app-trade>
 <app-combat *ngIf="ActiveTab == Tab2"></app-combat>
+<app-exploration *ngIf="ActiveTab == Tab3"></app-exploration>
