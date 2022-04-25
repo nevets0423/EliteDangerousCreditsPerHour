@@ -13,6 +13,9 @@ import { TabsComponent } from './Componets/tabs/tabs.component';
 import { CombatComponent } from './Pages/combat/combat.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { ExplorationComponent } from './Pages/exploration/exploration.component';
+import { FirstDiscoveredComponent } from './Pages/first-discovered/first-discovered.component';
+import { CheckBoxCellRenderer } from './grid-render-components/checkBox-cel-renderer.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,8 @@ import { ExplorationComponent } from './Pages/exploration/exploration.component'
     TabsComponent,
     CombatComponent,
     ExplorationComponent,
+    FirstDiscoveredComponent,
+    CheckBoxCellRenderer,
   ],
   imports: [
     BrowserModule,
@@ -30,7 +35,8 @@ import { ExplorationComponent } from './Pages/exploration/exploration.component'
     NgxElectronModule,
     BrowserAnimationsModule,
     MatTabsModule,
-    AgGridModule,
+    FormsModule,
+    AgGridModule.withComponents([CheckBoxCellRenderer]),
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -47,5 +47,4 @@ export class ExplorationComponent implements OnInit {
   constructor(private _explorationService: ExplorationService, private _flightService: FlightService) { }
 
   ngOnInit(): void {}
-
 }

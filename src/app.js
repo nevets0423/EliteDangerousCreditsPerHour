@@ -75,6 +75,23 @@ ipcMain.on("GetJournalFilePath", (event, messageFromAngular) => {
   event.reply("GetJournalFilePath-reply", GetJournalResponse());
 });
 
+ipcMain.on("SaveData", (event, args) => {
+  var userDirPath = app.getPath('home');
+  var folderPath = userDirPath + "\\Saved Games\\Elite Dangerous Credit Tracker";
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
+
+  var filePath = folderPath + "\\" + args[0];
+  args.slice(1).forEach(item => {
+    if (fs.existsSync(filePath)) {
+      fs.appendFileSync(filePath, item+"\n");
+    } else {
+      fs.writeFileSync(filePath, item+"\n");
+    }
+  });
+});
+
 var lastModified = 0;
 function GetJournalResponse(){
   var response = {

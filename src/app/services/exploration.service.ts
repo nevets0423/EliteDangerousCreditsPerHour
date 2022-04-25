@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ElectronService } from 'ngx-electron';
 import { filter, BehaviorSubject } from 'rxjs';
 import { JournalNotifierService } from './journal-notifier.service';
 
@@ -6,7 +7,7 @@ import { JournalNotifierService } from './journal-notifier.service';
   providedIn: 'root'
 })
 export class ExplorationService {
-  constructor(private _journalNotifierService: JournalNotifierService) { }
+  constructor(private _journalNotifierService: JournalNotifierService, private _electronService: ElectronService) { }
 
   private _system = new BehaviorSubject<string|null>(null);
   public System(){
@@ -33,7 +34,14 @@ export class ExplorationService {
     return this._systemScanned;
   }
 
-  public SystemDataSold:  any[] = [];
+  private _systemDataSold = new BehaviorSubject<any[]>([]);
+  public get SystemDataSold(){
+    return this._systemDataSold.asObservable();
+  }
+
+  public ClearSystemSavedData(){
+    this._systemDataSold.next([]);
+  }
 
   private _totalFromExplorationData = new BehaviorSubject<number>(0);
   public TotalFromExplorationData() {
@@ -78,27 +86,39 @@ export class ExplorationService {
         this._bodiesDiscovered.next(0);
         this._systemScanned = false;
     });
-    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.SellExplorationData)
-      .pipe(filter(event => event != null))
-      .subscribe(event => {
-        this._totalFromExplorationData.next(this._totalFromExplorationData.value + event.TotalEarnings);
-        this.SystemDataSold.push(event.Discovered.map((system: any) => {
-          return {
-            SystemName: system.SystemName,
-            PossibleFirstDiscovery: event.Bonus > 0
-          }
-        }));
-    });
     this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.SellMultipleExplorationData)
       .pipe(filter(event => event != null))
       .subscribe(event => {
         this._totalFromExplorationData.next(this._totalFromExplorationData.value + event.TotalEarnings);
-        this.SystemDataSold.push(event.Systems.map((systemName: any) => {
+        var newSystemData = event.Discovered.map((system: any) => {
+          return {
+            SystemName: system.SystemName,
+            PossibleFirstDiscovery: event.Bonus > 0
+          }
+        });
+        this.AppendSystemData(newSystemData);
+    });
+    this._journalNotifierService.GetSubscriptionFor(this._journalNotifierService.SellExplorationData)
+      .pipe(filter(event => event != null))
+      .subscribe(event => {
+        this._totalFromExplorationData.next(this._totalFromExplorationData.value + event.TotalEarnings);
+        var newSystemData = event.Systems.map((systemName: any) => {
           return {
             SystemName: systemName,
             PossibleFirstDiscovery: event.Bonus > 0
           }
-        }));
+        });
+        this.AppendSystemData(newSystemData);
     });
+  }
+
+  private AppendSystemData(newSystemData: any){
+    var systemData = this._systemDataSold.value;
+    this._systemDataSold.next([...systemData, ...newSystemData]);
+  }
+
+  public SaveSystemData(systemData: any[]){
+    var dataToSave = systemData.map(data => JSON.stringify(data));
+    this._electronService.ipcRenderer.send('SaveData', ['firstVisited.log', ...dataToSave]);
   }
 }

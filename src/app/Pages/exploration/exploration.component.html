@@ -11,6 +11,5 @@
 <div *ngIf="HasBeenScanned" class="centerText">
   <h1>System: {{SystemName | async}}</h1>
   <h1>BodyCount: {{BodyCount | async}}</h1>
-  <h2>Progress {{Progress | async}}</h2>
+  <h2>Progress {{((Progress | async) || 0) * 100}}%</h2>
 </div>
-

@@ -1,0 +1,19 @@
+<div *ngIf="rowData.length > 0">
+  <h1 class="center">New Systems Discovered.</h1>
+</div>
+<div *ngIf="rowData.length > 0">
+  <div class="center">
+    <ag-grid-angular
+        style="height: 350px; width: 75%;"
+        class="ag-theme-balham"
+        [rowData]="rowData"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [pagination]="true"
+        [frameworkComponents]="frameworkComponents"
+        (gridReady)="onGridReady($event)"
+        [paginationPageSize]="paginationPageSize">
+    </ag-grid-angular>
+  </div>
+  <button (click)="SaveClicked()" class="center">Save</button>
+</div>
