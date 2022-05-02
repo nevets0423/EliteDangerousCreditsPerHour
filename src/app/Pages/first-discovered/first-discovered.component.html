@@ -1,19 +1,36 @@
-<div *ngIf="rowData.length > 0">
+<div *ngIf="newSystemsRowData.length > 0">
   <h1 class="center">New Systems Discovered.</h1>
+  <mat-slide-toggle [(ngModel)]="hideNewSystems">Hide new Systems</mat-slide-toggle>
 </div>
-<div *ngIf="rowData.length > 0">
+<div *ngIf="newSystemsRowData.length > 0 && !hideNewSystems">
+  <button (click)="SaveClicked()" class="center">Save</button>
   <div class="center">
     <ag-grid-angular
         style="height: 350px; width: 75%;"
         class="ag-theme-balham"
-        [rowData]="rowData"
-        [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef"
+        [rowData]="newSystemsRowData"
+        [columnDefs]="newSystemsColumnDefs"
+        [defaultColDef]="newSystemsDefaultColDef"
         [pagination]="true"
         [frameworkComponents]="frameworkComponents"
         (gridReady)="onGridReady($event)"
         [paginationPageSize]="paginationPageSize">
     </ag-grid-angular>
   </div>
-  <button (click)="SaveClicked()" class="center">Save</button>
+</div>
+<div *ngIf="newSystemsRowData.length == 0 || hideNewSystems">
+  <div class="center">
+    <ag-grid-angular
+        style="height: 360px; width: 75%;"
+        class="ag-theme-balham"
+        [rowData]="systemsRowData"
+        [columnDefs]="systemsColumnDefs"
+        [defaultColDef]="systemsDefaultColDef"
+        [pagination]="true"
+        [frameworkComponents]="frameworkComponents"
+        (gridReady)="onMainGridReady($event)"
+        [enableCellChangeFlash]="true"
+        [paginationPageSize]="paginationPageSize">
+    </ag-grid-angular>
+  </div>
 </div>

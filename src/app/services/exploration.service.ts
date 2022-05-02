@@ -1,13 +1,45 @@
+import { FlightService } from './flight.service';
 import { Injectable } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
-import { filter, BehaviorSubject } from 'rxjs';
+import { filter, BehaviorSubject, take } from 'rxjs';
 import { JournalNotifierService } from './journal-notifier.service';
+import { HttpClient} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExplorationService {
-  constructor(private _journalNotifierService: JournalNotifierService, private _electronService: ElectronService) { }
+  private readonly _saveFile = 'firstVisited.log';
+
+  constructor(
+    private _journalNotifierService: JournalNotifierService,
+    private _electronService: ElectronService,
+    private http: HttpClient,
+    private _flightService: FlightService) {
+    this._electronService.ipcRenderer.send('LoadData', this._saveFile);
+    this._electronService.ipcRenderer.on("LoadData-reply", (event, arg:any) => {
+      if(!arg.loaded){
+        return;
+      }
+      try{
+        var firstDiscoveredSystems = arg.data.trimEnd().split('\n').map((line:string) => JSON.parse(line)) as  any[];
+        this.AddAllToFirstDiscovered(firstDiscoveredSystems);
+      }
+      catch{
+        console.error("Failed to read Save File.")
+        return;
+      }
+    });
+
+    this._flightService.StarSystem.pipe(filter(s => s != null)).subscribe(system => {
+      this.CalculateDistanceToSystems(system);
+    });
+  }
+
+  private _firstDiscoveredSystems = new BehaviorSubject<any[]>([]);
+  public FirstDiscoveredSystems() {
+    return this._firstDiscoveredSystems.asObservable();
+  }
 
   private _system = new BehaviorSubject<string|null>(null);
   public System(){
@@ -55,7 +87,6 @@ export class ExplorationService {
         this._system.next(event.SystemName);
         this._bodyCount.next(event.BodyCount);
         this._progress.next(event.Progress);
-
         var totalBodies = this._bodyCount.value;
         var currentPercent = this._progress.value;
         this._bodiesDiscovered.next(Math.floor(totalBodies * currentPercent));
@@ -90,7 +121,8 @@ export class ExplorationService {
       .pipe(filter(event => event != null))
       .subscribe(event => {
         this._totalFromExplorationData.next(this._totalFromExplorationData.value + event.TotalEarnings);
-        var newSystemData = event.Discovered.map((system: any) => {
+        var newSystemData = event.Discovered.filter((system: any) => this._firstDiscoveredSystems.value.findIndex(v => v.SystemName == system.SystemName) == -1)
+        .map((system: any) => {
           return {
             SystemName: system.SystemName,
             PossibleFirstDiscovery: event.Bonus > 0
@@ -102,7 +134,8 @@ export class ExplorationService {
       .pipe(filter(event => event != null))
       .subscribe(event => {
         this._totalFromExplorationData.next(this._totalFromExplorationData.value + event.TotalEarnings);
-        var newSystemData = event.Systems.map((systemName: any) => {
+        var newSystemData = event.Systems.filter((systemName: string) => this._firstDiscoveredSystems.value.findIndex(v => v.SystemName == systemName) == -1)
+        .map((systemName: any) => {
           return {
             SystemName: systemName,
             PossibleFirstDiscovery: event.Bonus > 0
@@ -119,6 +152,89 @@ export class ExplorationService {
 
   public SaveSystemData(systemData: any[]){
     var dataToSave = systemData.map(data => JSON.stringify(data));
-    this._electronService.ipcRenderer.send('SaveData', ['firstVisited.log', ...dataToSave]);
+    this._electronService.ipcRenderer.send('SaveData', [this._saveFile, ...dataToSave]);
+    this.AddAllToFirstDiscovered(systemData);
+  }
+
+  private GetSystemCord(systemName: string){
+    var options = {
+      params: {
+        systemName: systemName,
+        showCoordinates: 1
+      }
+    };
+
+    return this.http.get('https://www.edsm.net/api-v1/system', options);
+  }
+
+  private AddAllToFirstDiscovered(systemData: any[]){
+    for(var i=0; i < systemData.length; i++){
+      this.AddToFirstDiscrovered(systemData[i])
+    }
+  }
+
+  private AddToFirstDiscrovered(system: any){
+    this.GetSystemCord(system.SystemName).pipe(take(1)).subscribe({
+      next: (value:any) => {
+        try{
+          var cords = value.coords;
+          system.cords = cords;
+          var coreSystem = this._flightService.StarSystemValue;
+          system.dist = 'N/A';
+          if(coreSystem != null){
+            system.dist = this.CalculateDistanceBewteenSystems(system.cords, {
+              x: coreSystem.StarPos[0],
+              y: coreSystem.StarPos[1],
+              z: coreSystem.StarPos[2]
+            });
+          }
+          this.AddSystemToFirstDiscovered(system);
+        }
+        catch(error){
+          console.error('failed to get system cords', error);
+        }
+      },
+      error: value => {
+        system.cords = null;
+        system.dist = 'N/A';
+        this.AddSystemToFirstDiscovered(system);
+      }
+    });
+  }
+
+  private AddSystemToFirstDiscovered(system: any){
+    var firstDiscoveredSystems = this._firstDiscoveredSystems.value;
+    this._firstDiscoveredSystems.next([...firstDiscoveredSystems, system]);
+
+    var index = this._systemDataSold.value.findIndex(s => s.SystemName == system.SystemName);
+    if(index >= 0){
+      var systemDataSold = this._systemDataSold.value;
+      systemDataSold = systemDataSold.filter(item => item.SystemName != system.SystemName);
+      this._systemDataSold.next(systemDataSold);
+    }
+  }
+
+  private CalculateDistanceToSystems(coreSystem: any){
+    var systems = this._firstDiscoveredSystems.value;
+    var newSystemValues = [];
+
+    for(var i =0; i < systems.length; i++){
+      var system = systems[i];
+      system.dist = this.CalculateDistanceBewteenSystems(system.cords, {
+        x: coreSystem.StarPos[0],
+        y: coreSystem.StarPos[1],
+        z: coreSystem.StarPos[2]
+      });
+      newSystemValues.push(system);
+    }
+
+    this._firstDiscoveredSystems.next(newSystemValues);
+  }
+
+  private CalculateDistanceBewteenSystems(cordA: any, cordB: any){
+    if(cordA == undefined || cordA == null || cordB == undefined || cordB == null){
+      return 'N/A';
+    }
+    return Math.sqrt(Math.pow(cordA.x - (cordB.x),2) + Math.pow(cordA.y - (cordB.y),2) + Math.pow(cordA.z - (cordB.z),2)).toFixed(2);
   }
 }

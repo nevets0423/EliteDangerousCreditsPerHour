@@ -75,9 +75,20 @@ ipcMain.on("GetJournalFilePath", (event, messageFromAngular) => {
   event.reply("GetJournalFilePath-reply", GetJournalResponse());
 });
 
+ipcMain.on("LoadData", (event, args) => {
+  var folderPath = GetSaveFolderPath();
+  var filePath = folderPath + "\\" + args;
+  if (!fs.existsSync(filePath)) {
+    event.reply("LoadData-reply", {loaded: false});
+    return;
+  }
+
+  var data  = fs.readFileSync(filePath, 'utf8');
+  event.reply("LoadData-reply", {data: data, loaded: true});
+});
+
 ipcMain.on("SaveData", (event, args) => {
-  var userDirPath = app.getPath('home');
-  var folderPath = userDirPath + "\\Saved Games\\Elite Dangerous Credit Tracker";
+  var folderPath = GetSaveFolderPath();
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath);
   }
@@ -91,6 +102,11 @@ ipcMain.on("SaveData", (event, args) => {
     }
   });
 });
+
+function GetSaveFolderPath(){
+  var userDirPath = app.getPath('home');
+  return userDirPath + "\\Saved Games\\Elite Dangerous Credit Tracker";
+}
 
 var lastModified = 0;
 function GetJournalResponse(){

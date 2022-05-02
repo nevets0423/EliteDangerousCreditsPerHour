@@ -175,10 +175,11 @@ export class MarketMonitorService {
 
       var hours = Math.floor(Math.abs(new Date(this._currentTimeStamp).getTime() - new Date(startTimeStamp).getTime()) / (60*60*1000)) + 1;
       console.log("Hours", startTimeStamp, this._currentTimeStamp, hours);
-      var incomePerHour = Math.floor((totalMaded - totalPaid) + this.SumOfAdditionalCosts() / hours);
+      var incomePerHour = Math.floor(((totalMaded - totalPaid) + this.SumOfAdditionalCosts()) / hours);
       if(incomePerHour == this._incomePerHour.value){
         return;
       }
+      console.log("Total made", totalMaded - totalPaid)
       this._incomePerHour.next(incomePerHour);
     }
     catch{

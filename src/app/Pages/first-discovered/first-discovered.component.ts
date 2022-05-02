@@ -1,3 +1,4 @@
+import { CopyButtonCellRenderer } from './../../grid-render-components/clip-board-copy-cel-renderer.component';
 import { Component, OnInit } from '@angular/core';
 import { ExplorationService } from 'src/app/services/exploration.service';
 import { CheckBoxCellRenderer } from 'src/app/grid-render-components/checkBox-cel-renderer.component';
@@ -9,16 +10,35 @@ import { GridReadyEvent } from 'ag-grid-community';
   styleUrls: ['./first-discovered.component.css']
 })
 export class FirstDiscoveredComponent implements OnInit {
-  public defaultColDef = {
+  public hideNewSystems: boolean = true;
+  public newSystemsDefaultColDef = {
     sortable: true,
     filter: false,
   };
-  public frameworkComponents = {
-    checkBoxCellRenderer: CheckBoxCellRenderer
+  public systemsDefaultColDef = {
+    sortable: true,
+    filter: true,
   };
+
+  public frameworkComponents = {
+    checkBoxCellRenderer: CheckBoxCellRenderer,
+    copyButtonCellRenderer: CopyButtonCellRenderer
+  };
+
   public paginationPageSize = 10;
-  public rowData: any[] = [];
-  public columnDefs = [
+  public newSystemsRowData: any[] = [];
+  public systemsRowData: any[] = [];
+  public systemsColumnDefs = [
+    {
+      headerName: '',
+      field: 'SystemName',
+      cellRenderer: 'copyButtonCellRenderer',
+      width: 50
+    },
+    {headerName: 'SystemName', field: 'SystemName'},
+    {headerName: 'Light Years', field: 'dist'}
+  ];
+  public newSystemsColumnDefs = [
     {headerName: 'FirstDiscovered',
       field: 'PossibleFirstDiscovery',
       cellRenderer: 'checkBoxCellRenderer',
@@ -27,19 +47,25 @@ export class FirstDiscoveredComponent implements OnInit {
         onChange: this.onCellChanged.bind(this)
       }
     },
-    {headerName: 'SystemName', field: 'SystemName'}
+    {headerName: 'New SystemName', field: 'SystemName'}
   ];
 
   constructor(private _explorationService: ExplorationService) { }
+  private api: any;
 
   ngOnInit(): void {
     this._explorationService.SystemDataSold.subscribe(value => {
-      this.rowData = value.filter(r => r.PossibleFirstDiscovery);
+      this.newSystemsRowData = [...this.newSystemsRowData, ...value.filter(r => r.PossibleFirstDiscovery)];
+      this.hideNewSystems = false;
+    });
+
+    this._explorationService.FirstDiscoveredSystems().subscribe(value =>{
+      this.systemsRowData = value;
     });
   }
 
   public SaveClicked(){
-    var systemsToSave = this.rowData
+    var systemsToSave = this.newSystemsRowData
       .filter(r => r.PossibleFirstDiscovery)
       .map(r => {
         return {
@@ -55,5 +81,11 @@ export class FirstDiscoveredComponent implements OnInit {
 
   onGridReady(params: GridReadyEvent) {
     params.api.sizeColumnsToFit();
+  }
+
+  onMainGridReady(params: GridReadyEvent) {
+    this.api = params.api;
+    this.api.sizeColumnsToFit();
+    this.api.setRowData(this.systemsRowData);
   }
 }

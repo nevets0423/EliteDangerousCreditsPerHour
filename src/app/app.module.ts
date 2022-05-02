@@ -1,3 +1,4 @@
+import { CopyButtonCellRenderer } from './grid-render-components/clip-board-copy-cel-renderer.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxElectronModule } from 'ngx-electron';
@@ -16,6 +17,8 @@ import { ExplorationComponent } from './Pages/exploration/exploration.component'
 import { FirstDiscoveredComponent } from './Pages/first-discovered/first-discovered.component';
 import { CheckBoxCellRenderer } from './grid-render-components/checkBox-cel-renderer.component';
 import { FormsModule } from '@angular/forms';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -28,15 +31,21 @@ import { FormsModule } from '@angular/forms';
     ExplorationComponent,
     FirstDiscoveredComponent,
     CheckBoxCellRenderer,
+    CopyButtonCellRenderer
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     NgxElectronModule,
     BrowserAnimationsModule,
     MatTabsModule,
+    MatSlideToggleModule,
     FormsModule,
-    AgGridModule.withComponents([CheckBoxCellRenderer]),
+    AgGridModule.withComponents([
+      CheckBoxCellRenderer,
+      CopyButtonCellRenderer
+    ]),
   ],
   providers: [],
   bootstrap: [AppComponent]
